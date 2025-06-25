@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API URL Change Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 32px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #1976d2;
+        }
+
+        code,
+        pre {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        ul,
+        ol {
+            margin-left: 24px;
+        }
+
+        .example {
+            background: #f9f9f9;
+            border-left: 4px solid #1976d2;
+            padding: 12px;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>API URL Change Guide</h1>
+        <p>This guide explains how to change the API source URLs for each provider (VidSrc, 2Anime, AnimePahe, AniWatch)
+            in the Anitium Anime Watch Script. If a provider changes their domain or you want to use a different API
+            endpoint, follow the steps below for each API.</p>
+
+        <h2>API-1 (VidSrc)</h2>
+        <ul>
+            <li><strong>Where used:</strong> <code>app/Controllers/Converter.php</code> (2 times, for embed URL
+                generation and conversion)</li>
+            <li><strong>How to change:</strong> Search for <code>vidsrc.to</code> in <code>Converter.php</code> and
+                replace with the new VidSrc domain or API endpoint as needed.</li>
+            <li><strong>Note:</strong> VidSrc is only used for generating embed URLs; video playback is handled
+                externally.</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>Open <code>app/Controllers/Converter.php</code></li>
+                <li>Find: <code>vidsrc.to</code></li>
+                <li>Replace with: <code>new-vidsrc-domain.com</code></li>
+            </ul>
+        </div>
+
+        <h2>API-2 (2Anime)</h2>
+        <ul>
+            <li><strong>Where used:</strong> <code>app/Controllers/Converter.php</code> (2 times, for embed URL
+                generation and conversion)</li>
+            <li><strong>How to change:</strong> Search for <code>2anime.xyz</code> in <code>Converter.php</code> and
+                replace with the new 2Anime domain or API endpoint as needed.</li>
+            <li><strong>Note:</strong> 2Anime is only used for generating embed URLs; video playback is handled
+                externally.</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>Open <code>app/Controllers/Converter.php</code></li>
+                <li>Find: <code>2anime.xyz</code></li>
+                <li>Replace with: <code>new-2anime-domain.com</code></li>
+            </ul>
+        </div>
+
+        <h2>API-3 (AnimePahe)</h2>
+        <ul>
+            <li><strong>Where used:</strong> <code>app/Controllers/ApiConverter.php</code> (for fetching video sources),
+                <code>app/Controllers/Converter.php</code> (2 times, for embed URL generation and conversion)</li>
+            <li><strong>How to change:</strong> Search for <code>anime-mapper-gamma.vercel.app</code> in both
+                <code>ApiConverter.php</code> and <code>Converter.php</code> and replace with the new AnimePahe API
+                endpoint.</li>
+            <li><strong>Note:</strong> No need to change anything in <code>AdminApi.php</code>, <code>Player.php</code>,
+                or <code>VideoProxy.php</code> for API-3.</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>Open <code>app/Controllers/ApiConverter.php</code> and <code>app/Controllers/Converter.php</code>
+                </li>
+                <li>Find: <code>anime-mapper-gamma.vercel.app</code></li>
+                <li>Replace with: <code>new-animepahe-api.com</code></li>
+            </ul>
+        </div>
+
+        <h2>API-4 (AniWatch / HiAnime)</h2>
+        <ul>
+            <li><strong>Where used:</strong> <code>app/Controllers/AdminApi.php</code> (for fetching episode list),
+                <code>app/Controllers/ApiConverter.php</code> (for fetching episode sources),
+                <code>app/Controllers/Converter.php</code> (2 times, for embed URL generation and conversion)</li>
+            <li><strong>How to change:</strong> Search for <code>aniwatch-api-one-virid.vercel.app</code> in
+                <code>AdminApi.php</code>, <code>ApiConverter.php</code>, and <code>Converter.php</code> and replace
+                with the new AniWatch API endpoint.</li>
+            <li><strong>Note:</strong> <code>Player.php</code> and <code>VideoProxy.php</code> do not contain hardcoded
+                API URLs; they only handle video proxying and playback.</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>Open <code>app/Controllers/AdminApi.php</code>, <code>app/Controllers/ApiConverter.php</code>,
+                    <code>app/Controllers/Converter.php</code></li>
+                <li>Find: <code>aniwatch-api-one-virid.vercel.app</code></li>
+                <li>Replace with: <code>new-aniwatch-api.com</code></li>
+            </ul>
+        </div>
+
+        <h2>General Steps to Change an API URL</h2>
+        <ol>
+            <li>Open the relevant controller file(s) as listed above.</li>
+            <li>Use the search function (Ctrl+F) to find the current API URL (e.g.,
+                <code>aniwatch-api-one-virid.vercel.app</code>).</li>
+            <li>Replace the old URL with the new API endpoint.</li>
+            <li>Save the file and test the embed and playback functionality to ensure the new API works as expected.
+            </li>
+        </ol>
+        <div class="example">
+            <strong>Tip:</strong> Always back up your files before making changes.<br>
+            <strong>Note:</strong> If the API provider changes their response format, you may also need to update the
+            code that parses the API response.
+        </div>
+        <div style="color:#888;font-size:0.95em;">
+            <strong>Controllers involved:</strong> <code>AdminApi.php</code>, <code>ApiConverter.php</code>,
+            <code>Converter.php</code>, <code>Player.php</code>, <code>VideoProxy.php</code><br>
+            <strong>Proxy Note:</strong> <code>Player.php</code> and <code>VideoProxy.php</code> do not contain
+            hardcoded API URLs, but handle video proxying and playback for all APIs.
+        </div>
+        <p><a href="../index.html">&larr; Back to Main Menu</a></p>
+
+    </div>
+</body>
+
+</html>

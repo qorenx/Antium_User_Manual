@@ -10,22 +10,76 @@
         h1 { color: #2d3e50; }
         ul { margin-left: 20px; }
         a { color: #1976d2; }
+        code, pre { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>How to Add Anime</h1>
+        <h1>How Anime Addition Works (Technical Guide)</h1>
+        <p>This section explains in detail how the anime addition process works in the Anitium backend, including the routes, controllers, models, and data flow. This is useful for developers and advanced users.</p>
+        <h2>1. Route Definition</h2>
+        <p>The following routes are defined in <code>app/Config/Routes.php</code> for anime management in the admin panel:</p>
+        <pre>
+$routes->group('admin', ['filter' => 'group:superadmin', 'namespace' => 'App\\Controllers'], function ($routes) {
+    $routes->group('anime', function ($routes) {
+        $routes->get('add', 'AdminAnime::AnimeAdd');
+        $routes->post('add', 'AdminAnime::AnimeAdd');
+        $routes->post('save', 'AdminAnime::AnimeSave');
+        // ...
+    });
+});
+        </pre>
         <ul>
-            <li>Go to the <b>Anime Add</b> section in the admin panel.</li>
-            <li>Fill in the required fields: title, romanji, description, genre, year, etc.</li>
-            <li>Optionally, add cover image, tags, and other metadata.</li>
-            <li>Click <b>Save</b> to add the anime to the system.</li>
+            <li><b>GET /admin/anime/add</b>: Shows the anime add form.</li>
+            <li><b>POST /admin/anime/add</b>: Handles form submission (manual or API-based).</li>
+            <li><b>POST /admin/anime/save</b>: Saves the anime to the database.</li>
         </ul>
-        <h2>Notes</h2>
+        <h2>2. Controller Logic</h2>
+        <p>The main logic is in <code>app/Controllers/AdminAnime.php</code>:</p>
         <ul>
-            <li>All required fields must be filled in for the anime to be added.</li>
-            <li>Use correct romanji and English titles for better searchability.</li>
-            <li>Genres and tags help users find anime more easily.</li>
+            <li><b>AnimeAdd()</b>: Handles both manual and API-based addition. If a <code>mal_id</code> is provided, it fetches data from the Jikan API; otherwise, it shows a manual entry form.</li>
+            <li><b>AnimeAddManual()</b>: Prepares a blank form for manual entry.</li>
+            <li><b>AnimeSave()</b>: Receives POST data and saves the anime to the database using the <code>ModelAnime</code> model.</li>
+        </ul>
+        <pre>
+// Example: Saving anime (simplified)
+public function AnimeSave() {
+    $ModelAnime = new ModelAnime();
+    $JikanData = $request->getPost([...]);
+    // ...
+    $ModelAnime->insert($JikanData);
+    // ...
+}
+        </pre>
+        <h2>3. Model Structure</h2>
+        <p>The <code>ModelAnime</code> model (<code>app/Models/ModelAnime.php</code>) defines the <code>anime</code> table and allowed fields. It handles validation and database operations.</p>
+        <pre>
+class ModelAnime extends Model {
+    protected $table = 'anime';
+    protected $allowedFields = [ 'mal_id', 'title', 'images', ... ];
+    // ...
+}
+        </pre>
+        <h2>4. Data Flow Example</h2>
+        <ol>
+            <li>Admin visits <b>/admin/anime/add</b> (GET) to see the add form.</li>
+            <li>Admin fills the form and submits (POST). Data is sent to <b>/admin/anime/save</b>.</li>
+            <li><code>AnimeSave()</code> in <code>AdminAnime.php</code> receives the data, validates, processes the image, and saves the record using <code>ModelAnime</code>.</li>
+            <li>Genres and other relations are also saved via helper methods.</li>
+        </ol>
+        <h2>5. Example Request</h2>
+        <pre>
+POST /admin/anime/save
+Content-Type: application/x-www-form-urlencoded
+
+mal_id=12345&title=Naruto&title_english=Naruto&year=2002&genres=Action,Adventure&...etc
+        </pre>
+        <h2>6. Notes</h2>
+        <ul>
+            <li>All required fields (e.g., <code>mal_id</code>, <code>title</code>, <code>slug</code>, <code>rating</code>) must be provided.</li>
+            <li>Images are downloaded and stored locally if not already present.</li>
+            <li>Genres are managed in a separate relation table.</li>
+            <li>For API-based addition, data is fetched from the Jikan API and pre-filled in the form.</li>
         </ul>
         <p><a href="../index.html">&larr; Back to Main Menu</a></p>
     </div>
