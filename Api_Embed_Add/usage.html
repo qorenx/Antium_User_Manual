@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Embed Usage Guide</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f8f8; margin: 0; padding: 0; }
+        .container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px; }
+        h1, h2, h3 { color: #1976d2; }
+        code, pre { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
+        .api-section { margin-bottom: 40px; }
+        ul, ol { margin-left: 24px; }
+        .example { background: #f9f9f9; border-left: 4px solid #1976d2; padding: 12px; margin: 12px 0; }
+        .input-block { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>API Embed Usage Guide</h1>
+    <p>This guide explains how to use different API sources for embedding anime episodes. For each API, you will find what to enter as <strong>api_input</strong>, how to find it, and how the system uses it. Please follow the instructions and examples for each API below.</p>
+
+    <div class="api-section">
+        <h2>API-1 (VidSrc)</h2>
+        <ul>
+            <li><strong>Source Site:</strong> <a href="https://vidsrc.to/" target="_blank">https://vidsrc.to/</a></li>
+        </ul>
+        <div class="input-block">
+            <strong>Required <code>api_input</code>:</strong> <code>tt2560140|1</code><br>
+            <strong>Format:</strong> <code>[IMDB_ID]|[SEASON_NUMBER]</code>
+        </div>
+        <ul>
+            <li><strong>How to find <code>api_input</code>:</strong>
+                <ol>
+                    <li>Go to the anime's IMDb page (e.g., <a href="https://www.imdb.com/title/tt2560140/" target="_blank">https://www.imdb.com/title/tt2560140/</a>).</li>
+                    <li>Extract the IMDb ID from the URL (e.g., <code>tt2560140</code>).</li>
+                    <li>Determine the season number you want (e.g., 1 for season 1).</li>
+                    <li>Combine as <code>tt2560140|1</code>.</li>
+                </ol>
+            </li>
+            <li><strong>Example <code>api_input</code>:</strong> <code>tt31131295|2</code> (for IMDb ID <code>tt31131295</code>, season 2)</li>
+            <li><strong>How the system uses <code>api_input</code>:</strong> The system generates embed URLs for each episode in the selected range by appending the episode number (e.g., <code>.../1</code>, <code>.../2</code>, etc.).</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>api_input: <code>tt31131295|1</code></li>
+                <li>Episode Range: 1-12</li>
+                <li>Generated embed URLs: <code>.../1</code>, <code>.../2</code>, ..., <code>.../12</code></li>
+            </ul>
+        </div>
+        <div class="example">
+            <strong>Notes:</strong><br>
+            - Always use the IMDb ID and season number separated by <code>|</code>.<br>
+            - If you select a single episode (e.g., 11-11), only that episode will be generated.
+        </div>
+    </div>
+
+    <div class="api-section">
+        <h2>API-2 (2Anime)</h2>
+        <ul>
+            <li><strong>Source Site:</strong> <a href="https://animeapi.skin/" target="_blank">https://animeapi.skin/</a></li>
+        </ul>
+        <div class="input-block">
+            <strong>Required <code>api_input</code>:</strong> <code>tokidoki-bosotto-russia-go-de-dereru-tonari-no-alya-san</code><br>
+            <strong>Format:</strong> <code>[anime-title-in-slug-format]</code>
+        </div>
+        <ul>
+            <li><strong>How to find <code>api_input</code>:</strong>
+                <ol>
+                    <li>Go to the anime's MyAnimeList page (e.g., <a href="https://myanimelist.net/anime/54744/Tokidoki_Bosotto_Russia-go_de_Dereru_Tonari_no_Alya-san" target="_blank">https://myanimelist.net/anime/54744/Tokidoki_Bosotto_Russia-go_de_Dereru_Tonari_no_Alya-san</a>).</li>
+                    <li>Take the main title and convert it to a slug (lowercase, spaces and special characters replaced with hyphens).</li>
+                    <li>Example: <code>Tokidoki Bosotto Russia-go de Dereru Tonari no Alya-san</code> → <code>tokidoki-bosotto-russia-go-de-dereru-tonari-no-alya-san</code></li>
+                </ol>
+            </li>
+            <li><strong>Example <code>api_input</code>:</strong> <code>attack-on-titan</code></li>
+            <li><strong>How the system uses <code>api_input</code>:</strong> The system generates episode URLs like <code>tokidoki-bosotto-russia-go-de-dereru-tonari-no-alya-san-episode-1</code>, <code>...-episode-2</code>, etc., for the selected range.</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>api_input: <code>tokidoki-bosotto-russia-go-de-dereru-tonari-no-alya-san</code></li>
+                <li>Episode Range: 1-12</li>
+                <li>Generated URLs: <code>tokidoki-bosotto-russia-go-de-dereru-tonari-no-alya-san-episode-1</code>, ..., <code>...-episode-12</code></li>
+            </ul>
+        </div>
+        <div class="example">
+            <strong>Notes:</strong><br>
+            - The <code>api_input</code> must be the slugified anime title.<br>
+            - If you select only one episode (e.g., 11-11), only that episode will be generated.
+        </div>
+    </div>
+
+    <div class="api-section">
+        <h2>API-3 (AnimePahe)</h2>
+        <ul>
+            <li><strong>Source:</strong> <a href="https://github.com/shafat-96/anime-mapper" target="_blank">Anime Mapper (GitHub)</a></li>
+        </ul>
+        <div class="input-block">
+            <strong>Required <code>api_input</code>:</strong> <code>162804</code><br>
+            <strong>Format:</strong> <code>[AniList_ID]</code>
+        </div>
+        <ul>
+            <li><strong>How to find <code>api_input</code>:</strong>
+                <ol>
+                    <li>Go to the anime's AniList page (e.g., <a href="https://anilist.co/anime/162804/Tokidoki-Bosotto-Russiago-de-Dereru-Tonari-no-Alyasan/" target="_blank">https://anilist.co/anime/162804/Tokidoki-Bosotto-Russiago-de-Dereru-Tonari-no-Alyasan/</a>).</li>
+                    <li>Extract the AniList ID from the URL (e.g., <code>162804</code>).</li>
+                </ol>
+            </li>
+            <li><strong>Example <code>api_input</code>:</strong> <code>11061</code></li>
+            <li><strong>How the system uses <code>api_input</code>:</strong> The system generates URLs like <code>API_URL/animepahe/hls/162804/1</code>, <code>.../2</code>, etc., for the selected range.</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>api_input: <code>162804</code></li>
+                <li>Episode Range: 1-12</li>
+                <li>Generated URLs: <code>API_URL/animepahe/hls/162804/1</code>, ..., <code>.../12</code></li>
+            </ul>
+        </div>
+        <div class="example">
+            <strong>Notes:</strong><br>
+            - The <code>api_input</code> must be the AniList ID.<br>
+            - The episode number is appended for each episode in the range.
+        </div>
+    </div>
+
+    <div class="api-section">
+        <h2>API-4 (AniWatch / HiAnime)</h2>
+        <ul>
+            <li><strong>Source Site:</strong> <a href="https://hianime.to/" target="_blank">https://hianime.to/</a></li>
+            <li><strong>API:</strong> <a href="https://github.com/ghoshRitesh12/aniwatch-api" target="_blank">AniWatch API (GitHub)</a></li>
+        </ul>
+        <div class="input-block">
+            <strong>Required <code>api_input</code>:</strong> <code>alya-sometimes-hides-her-feelings-in-russian-19254</code><br>
+            <strong>Format:</strong> <code>[anime-slug-from-hianime-url]</code>
+        </div>
+        <ul>
+            <li><strong>How to find <code>api_input</code>:</strong>
+                <ol>
+                    <li>Go to the anime's HiAnime page (e.g., <a href="https://hianime.to/alya-sometimes-hides-her-feelings-in-russian-19254" target="_blank">https://hianime.to/alya-sometimes-hides-her-feelings-in-russian-19254</a>).</li>
+                    <li>Copy the slug part after the last slash (e.g., <code>alya-sometimes-hides-her-feelings-in-russian-19254</code>).</li>
+                </ol>
+            </li>
+            <li><strong>Example <code>api_input</code>:</strong> <code>one-piece-100</code></li>
+            <li><strong>How the system uses <code>api_input</code>:</strong> The system searches for and adds all episodes in the selected range using the slug.</li>
+        </ul>
+        <div class="example">
+            <strong>Example:</strong><br>
+            <ul>
+                <li>api_input: <code>alya-sometimes-hides-her-feelings-in-russian-19254</code></li>
+                <li>Episode Range: 1-12</li>
+                <li>Result: All episodes from 1 to 12 will be added using the API.</li>
+            </ul>
+        </div>
+        <div class="example">
+            <strong>Notes:</strong><br>
+            - The <code>api_input</code> must be the anime slug from the HiAnime URL.<br>
+            - If you select only one episode (e.g., 11-11), only that episode will be added.
+        </div>
+    </div>
+
+    <h2>Notes on Episode Range</h2>
+    <ul>
+        <li>If you select a range (e.g., 1-12), the system will generate and add all episodes in that range.</li>
+        <li>If you select a single episode (e.g., 11-11), only that episode will be added.</li>
+        <li>Each API has specific requirements for <code>api_input</code>. Always use the correct value as described above.</li>
+    </ul>
+
+    <h2>More Examples</h2>
+    <div class="example">
+        <strong>VidSrc Example:</strong><br>
+        <ul>
+            <li>api_input: <code>tt1234567|2</code></li>
+            <li>Episode Range: 5-8</li>
+            <li>Generated: <code>.../5</code>, <code>.../6</code>, <code>.../7</code>, <code>.../8</code></li>
+        </ul>
+    </div>
+    <div class="example">
+        <strong>2Anime Example:</strong><br>
+        <ul>
+            <li>api_input: <code>attack-on-titan</code></li>
+            <li>Episode Range: 1-25</li>
+            <li>Generated: <code>attack-on-titan-episode-1</code>, ..., <code>attack-on-titan-episode-25</code></li>
+        </ul>
+    </div>
+    <div class="example">
+        <strong>AnimePahe Example:</strong><br>
+        <ul>
+            <li>api_input: <code>11061</code></li>
+            <li>Episode Range: 1-12</li>
+            <li>Generated: <code>API_URL/animepahe/hls/11061/1</code>, ..., <code>.../12</code></li>
+        </ul>
+    </div>
+    <div class="example">
+        <strong>AniWatch Example:</strong><br>
+        <ul>
+            <li>api_input: <code>one-piece-100</code></li>
+            <li>Episode Range: 1001-1010</li>
+            <li>Result: Episodes 1001 to 1010 will be added.</li>
+        </ul>
+    </div>
+
+</div>
+</body>
+</html>
