@@ -1,45 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>How to Add Embed - Anitium Manual</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px; }
-        h1 { color: #2d3e50; }
-        h2 { color: #1976d2; margin-top: 32px; }
-        code, pre { background: #f4f4f4; border-radius: 4px; padding: 2px 6px; }
-        a { color: #1976d2; }
-        ul { margin-left: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 32px;
+        }
+
+        h1 {
+            color: #2d3e50;
+        }
+
+        h2 {
+            color: #1976d2;
+            margin-top: 32px;
+        }
+
+        code,
+        pre {
+            background: #f4f4f4;
+            border-radius: 4px;
+            padding: 2px 6px;
+        }
+
+        a {
+            color: #1976d2;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1>How to Add Embed</h1>
+        <h1>How to Add Embed (Technical Guide)</h1>
+        <p>This section explains in detail how the embed system works in Anitium, including how embeds are added via the
+            admin panel, how the backend processes them, and how to add new embed providers (like YouTube, VidSrc,
+            2Anime, etc.).</p>
+        <h2>1. Adding Embeds via the Admin Panel</h2>
+        <ol>
+            <li>Go to the <b>Episode List</b> in the admin panel and select the episode you want to add an embed to.
+            </li>
+            <li>Click <b>Add Embed</b> or <b>Edit Embed</b>. The view for this is rendered from the backend (see
+                <code>views</code> directory).</li>
+            <li>Paste the embed code (iframe or video link) into the provided field. You can use direct links (e.g.,
+                YouTube) or special API formats (e.g., <code>$vidsrc$imdbid|season|episode</code>).</li>
+            <li>Choose the embed type (e.g., VidSrc, 2Anime, YouTube, etc.) if required, set server order and fansub if
+                needed, and save.</li>
+        </ol>
+        <h2>2. How the Backend Processes Embeds</h2>
+        <p>When an embed is requested, the backend uses <code>Converter.php</code> to process and return the correct
+            embed data. The main method is <code>get_embed()</code>:</p>
+        <pre>
+public function get_embed() {
+    $embedmodel = new ModelAnimeEmbed();
+    $embedid = $this->request->getVar('id');
+    ...
+    $Embed = $embedmodel->getEmbed($embedid);
+    $Embed['embed_frame'] = $this->convertEmbedUrl($Embed['embed_frame']);
+    // Provider matching
+    foreach ($embedProviders as $key => $provider) {
+        if (isset($provider['domains'])) {
+            foreach ($provider['domains'] as $domain) {
+                if (strpos($Embed['embed_frame'], $domain) !== false) {
+                    return $this->{$provider['method']}(...);
+                }
+            }
+        } else {
+            if (strpos($Embed['embed_frame'], $key) !== false) {
+                return $this->{$provider['method']}(...);
+            }
+        }
+    }
+}
+        </pre>
         <ul>
-            <li>Go to the <b>Episode List</b> in the admin panel.</li>
-            <li>Select the episode you want to add an embed to.</li>
-            <li>Click <b>Add Embed</b> or <b>Edit Embed</b>.</li>
-            <li>Paste the embed code (iframe or video link) into the provided field.</li>
-            <li>Choose the embed type (e.g., VidSrc, 2Anime, YouTube, etc.) if required.</li>
-            <li>Set the embed server order and fansub if needed.</li>
-            <li>Click <b>Save</b> to attach the embed to the episode.</li>
+            <li>Each provider (YouTube, VidSrc, 2Anime, etc.) is mapped to a handler method (e.g.,
+                <code>get_embed_youtube</code>).</li>
+            <li>Providers can be matched by a single domain (e.g.,
+                <code>'youtube.com' => ['method' => 'get_embed_youtube']</code>) or by multiple domains (e.g.,
+                <code>'youtube' => ['domains' => ['youtube.com', 'youtu.be'], 'method' => 'get_embed_youtube']</code>).
+            </li>
         </ul>
-        <h2>Supported Embed Types</h2>
+        <h2>3. Example: YouTube Embed Handler</h2>
+        <pre>
+public function get_embed_youtube($id, $user, $embed_id, $order, $url, $fansub, $ftranslate) {
+    $url_components = explode('?', $url);
+    if (strpos($url, 'youtu.be') !== false) {
+        $video_id = basename($url_components[0]);
+    } else {
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+        $video_id = $query['v'];
+    }
+    $embed_code = 'https://www.youtube.com/embed/' . $video_id . '?mute=0';
+    $Data = [
+        'type' => "iframe",
+        'link' => $embed_code,
+        'server' => intval($order),
+        'sources' => [],
+        'tracks' => [],
+        'htmlGuide' => "",
+        'user' => $this->get_user($user, $fansub, $ftranslate),
+    ];
+    return $this->response->setJSON($Data);
+}
+        </pre>
         <ul>
-            <li><b>VidSrc</b> - <a href="https://vidsrc.to/" target="_blank">vidsrc.to</a></li>
-            <li><b>2Anime</b> - <a href="https://animeapi.skin/" target="_blank">animeapi.skin</a></li>
-            <li><b>YouTube</b> - <a href="https://youtube.com/" target="_blank">youtube.com</a></li>
-            <li>and more...</li>
+            <li>This method extracts the video ID from the URL and returns a standard YouTube embed iframe.</li>
         </ul>
-        <h2>Notes</h2>
+        <h2>4. Adding a New Embed Provider</h2>
+        <ol>
+            <li>In <code>Converter.php</code>, add a new entry to the <code>$embedProviders</code> array, mapping the
+                domain or domains to a new handler method.</li>
+            <li>Implement the handler method (e.g., <code>get_embed_vidsrc</code>, <code>get_embed_2anime</code>)
+                following the structure of <code>get_embed_youtube</code>.</li>
+            <li>If the provider uses a special API format, handle the conversion in <code>convertEmbedUrl()</code>.</li>
+            <li>Update the admin panel view to allow users to select or enter the new provider format.</li>
+        </ol>
+        <h3>Example: Adding a Custom Provider</h3>
+        <pre>
+// 1. Add to $embedProviders:
+'customprovider.com' => ['method' => 'get_embed_custom'],
+
+// 2. Implement handler:
+public function get_embed_custom($id, $user, $embed_id, $order, $url, $fansub, $ftranslate) {
+    // Custom logic here
+}
+        </pre>
+        <h2>5. Tips for Creating New Embed Methods</h2>
         <ul>
-            <li>Embed code must be a valid iframe or direct video link.</li>
-            <li>Server order affects the priority of the embed for the episode.</li>
-            <li>Fansub selection is optional but recommended for proper sorting.</li>
+            <li>Follow the structure of existing methods for consistency.</li>
+            <li>Use <code>convertEmbedUrl()</code> for any special URL parsing or conversion.</li>
+            <li>Test with both direct links and API-based formats.</li>
+            <li>Update documentation and admin panel UI to support the new provider.</li>
+        </ul>
+        <h2>6. Supported Providers (Examples)</h2>
+        <ul>
+            <li><b>YouTube</b> (youtube.com, youtu.be) - direct iframe embed</li>
+            <li><b>VidSrc</b> (vidsrc.to) - API-based embed</li>
+            <li><b>2Anime</b> (2anime.xyz) - API-based embed</li>
+            <li><b>AnimePahe</b> (anime-mapper-gamma.vercel.app) - API-based embed</li>
+            <li><b>AniWatch</b> (aniwatch-api-one-virid.vercel.app) - API-based embed</li>
         </ul>
         <p><a href="../index.html">&larr; Back to Main Menu</a></p>
     </div>
 </body>
+
 </html>
