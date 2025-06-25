@@ -14,19 +14,71 @@
 </head>
 <body>
     <div class="container">
-        <h1>How to Add Episode</h1>
+        <h1>How to Add Episode (Technical Guide)</h1>
+        <p>This section explains in detail how to add episodes to an anime in the Anitium backend, including all available methods, backend flow, and code references.</p>
+        <h2>1. Route Definitions</h2>
+        <p>Episode management routes are defined in <code>app/Config/Routes.php</code>:</p>
+        <pre>
+$routes->group('admin', ... , function ($routes) {
+    $routes->group('episode', function ($routes) {
+        $routes->get('add', 'AdminAnime::EpisodeAdd');
+        $routes->post('add', 'AdminAnime::EpisodeAdd');
+        $routes->post('manueladd', 'AdminAnime::EpisodeManuelAdd');
+        $routes->get('list', 'AdminAnime::EpisodeList');
+        // ...
+    });
+});
+        </pre>
         <ul>
-            <li>Go to the <b>Episode Add</b> section in the admin panel.</li>
-            <li>Select the anime you want to add episodes to.</li>
-            <li>Enter episode number, title, and other details (raw, sub, dub, filler, recap, etc.).</li>
-            <li>For batch add, specify the episode range.</li>
-            <li>Click <b>Save</b> to add the episode(s).</li>
+            <li><b>GET /admin/episode/add</b>: Shows the episode add form.</li>
+            <li><b>POST /admin/episode/add</b>: Handles form submission (Jikan or manual).</li>
+            <li><b>POST /admin/episode/manueladd</b>: Handles manual or batch episode addition.</li>
+            <li><b>GET /admin/episode/list</b>: Lists all episodes for an anime.</li>
         </ul>
-        <h2>Notes</h2>
+        <h2>2. Adding Methods</h2>
         <ul>
-            <li>Episode number must be unique for each anime.</li>
-            <li>Use batch add for adding multiple episodes at once.</li>
-            <li>Fill in all required fields for each episode.</li>
+            <li><b>Jikan Anime Batch Import:</b> If you choose Jikan mode, the system fetches all episode data for the anime from the Jikan API (MyAnimeList) and imports them in batch. This is handled by <code>JikanEpisodeData()</code> and <code>JikanEpisodeDataSave()</code> in <code>AdminAnime.php</code>.</li>
+            <li><b>Manual Episode Adding:</b> If you choose manual mode, you can add episodes one by one or in batch by specifying a range. This is handled by <code>EpisodeManuelAdd()</code> in <code>AdminAnime.php</code>.</li>
+        </ul>
+        <h3>Jikan Batch Import Example</h3>
+        <pre>
+// Fetches all episodes from Jikan API and saves them
+default: JikanEpisodeData($mal_id, $anime_id)
+// For each episode:
+$ModelAnimeEpisode->insert([...]);
+        </pre>
+        <h3>Manual Episode Adding Example</h3>
+        <pre>
+// Add a single episode
+POST /admin/episode/manueladd
+mal_id=12345&ep_id=1&title=Episode+1&...&batch_enable=0
+
+// Add multiple episodes (batch)
+POST /admin/episode/manueladd
+mal_id=12345&batch_start=1&batch_end=12&title=Episode&...&batch_enable=1
+        </pre>
+        <h2>3. Backend Flow</h2>
+        <ol>
+            <li>Admin visits <b>/admin/episode/add</b> to see the add form.</li>
+            <li>Chooses Jikan (API) or Manual mode.</li>
+            <li>For Jikan: System fetches all episodes from Jikan API and saves them in batch.</li>
+            <li>For Manual: Admin can add a single episode or specify a range for batch adding. Each episode is saved using the <code>ModelAnimeEpisode</code> model.</li>
+        </ol>
+        <h2>4. Model Structure</h2>
+        <p>The <code>ModelAnimeEpisode</code> model (<code>app/Models/ModelAnimeEpisode.php</code>) defines the <code>anime_episode</code> table and allowed fields. It handles validation and database operations for episodes.</p>
+        <pre>
+class ModelAnimeEpisode extends Model {
+    protected $table = 'anime_episode';
+    protected $allowedFields = [ 'mal_id', 'ep_id', 'title', ... ];
+    // ...
+}
+        </pre>
+        <h2>5. Notes & Tips</h2>
+        <ul>
+            <li>Episode numbers (<code>ep_id</code>) must be unique for each anime.</li>
+            <li>Batch add is useful for quickly creating multiple episodes with similar data.</li>
+            <li>Jikan batch import is recommended for official anime with data on MyAnimeList.</li>
+            <li>Manual mode is flexible for custom or original content.</li>
         </ul>
         <p><a href="../index.html">&larr; Back to Main Menu</a></p>
     </div>
