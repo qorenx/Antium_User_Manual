@@ -81,6 +81,19 @@ mal_id=12345&title=Naruto&title_english=Naruto&year=2002&genres=Action,Adventure
             <li>Genres are managed in a separate relation table.</li>
             <li>For API-based addition, data is fetched from the Jikan API and pre-filled in the form.</li>
         </ul>
+        <h2>7. About MyAnimeList and <code>mal_id</code></h2>
+        <p><b>MyAnimeList (MAL)</b> is a popular online anime and manga database. Each anime on MyAnimeList has a unique identifier called <code>mal_id</code> (MyAnimeList ID). This ID is used throughout the Anitium system to uniquely identify anime and to fetch data from external sources.</p>
+        <ul>
+            <li>If you enter a valid <b>mal_id</b> in the add form, the system will fetch anime data from the <b>Jikan API</b> (an unofficial MyAnimeList API) and pre-fill the form with this information. This is called <b>Jikan Anime Adding</b>.</li>
+            <li>If you do <b>not</b> enter a <b>mal_id</b> or enter a random/nonexistent ID, the system will switch to <b>Manual Adding</b> mode. In this mode, you can enter all anime details from scratch, without fetching any data from MyAnimeList or Jikan.</li>
+            <li>This allows you to add custom or original anime entries that do not exist on MyAnimeList.</li>
+        </ul>
+        <h3>How the System Decides the Adding Mode</h3>
+        <ol>
+            <li>If a valid <code>mal_id</code> is provided and found on MyAnimeList, the system uses <b>Jikan Anime Adding</b> (auto-fills data).</li>
+            <li>If no <code>mal_id</code> is provided, or if you enter a random/nonexistent ID, the system uses <b>Manual Adding</b> (blank form, you fill all fields).</li>
+        </ol>
+        <p>This flexibility allows both importing official anime from MyAnimeList and creating custom entries as needed.</p>
         <p><a href="../index.html">&larr; Back to Main Menu</a></p>
     </div>
 </body>
